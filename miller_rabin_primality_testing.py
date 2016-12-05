@@ -4,18 +4,33 @@
 # author: xiaofengfeng
 # create: 2016-12-05 17:15:56
 
-
-def num_bits(num):
-    return len(bin(num)) - 2
+import random
 
 
-def miller_rabin_primality_testing(n):
-    a = 7
-    for _ in range(0, 7):
-        x = pow(a, 7, n)
+def miller_rabin_primality_testing(n, k):
+    """
+    Miller–Rabin primality test:"https://en.wikipedia.org/wiki/Miller–Rabin primality test"
+    """
+    if n < 10:
+        return n in (2, 3, 5, 7)
+    d = n - 1
+    r = 0
+    while not (d & 1):
+        r += 1
+        d >>= 1
+
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        x = pow(a, d, n)
         if x == 1 or x == n - 1:
-            print(True)
+            continue
 
-
-if __name__ == '__main__':
-    miller_rabin_primality_testing(97)
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == 1:
+                return False
+            if x == n - 1:
+                break
+        else:
+            return False
+    return True
